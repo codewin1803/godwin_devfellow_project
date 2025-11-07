@@ -1,56 +1,63 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\SuperAdminController;
-use App\Http\Controllers\SchoolAdminController;
-use App\Http\Controllers\TeacherController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\ParentController;
-use App\Http\Controllers\BursarController;
+use Illuminate\Support\Facades\Auth;
 
-
-
+// Default Welcome Page
 Route::get('/', function () {
     return view('welcome');
 });
 
-
+// Auth Routes (Login, Register, Logout, etc.)
 Auth::routes();
 
+// Dashboard — accessible by any logged-in user
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
+    ->middleware('auth')
+    ->name('home');
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-
-Route::middleware('auth')->group(function () {
-   
-    
-    Route::get('/superadmin/dashboard', [SuperAdminController::class, 'dashboard'])
-        ->middleware('role:SuperAdmin')
-        ->name('superadmin.dashboard');
-
-    
-    Route::get('/schooladmin/dashboard', [SchoolAdminController::class, 'dashboard'])
-        ->middleware('role:SchoolAdmin')
-        ->name('schooladmin.dashboard');
-
-    // Teacher dashboard
-    Route::get('/teacher/dashboard', [TeacherController::class, 'dashboard'])
-        ->middleware('role:Teacher')
-        ->name('teacher.dashboard');
-
-    // Student dashboard
-    Route::get('/student/dashboard', [StudentController::class, 'dashboard'])
-        ->middleware('role:Student')
-        ->name('student.dashboard');
+// SuperAdmin Only
+Route::middleware(['role:SuperAdmin'])->group(function () {
+    Route::get('/superadmin/dashboard', function () {
+        return view('roles.superadmin');
+    })->name('superadmin.dashboard');
+});
+Route::middleware(['role:SuperAdmin'])->group(function () {
+    Route::resource('schools', App\Http\Controllers\SchoolController::class);
+});
 
 
-    Route::get('/parent/dashboard', [ParentController::class, 'dashboard'])
-        ->middleware('role:Parent')
-        ->name('parent.dashboard');
+//SchoolAdmin Only
+Route::middleware(['role:SchoolAdmin'])->group(function () {
+    Route::get('/schooladmin/dashboard', function () {
+        return view('roles.schooladmin');
+    })->name('schooladmin.dashboard');
+});
 
+// Teacher Only
+Route::middleware(['role:Teacher'])->group(function () {
+    Route::get('/teacher/dashboard', function () {
+        return view('roles.teacher');
+    })->name('teacher.dashboard');
+});
 
-    Route::get('/bursar/dashboard', [BursarController::class, 'dashboard'])
-        ->middleware('role:Bursar')
-        ->name('bursar.dashboard');
+// Student Only
+Route::middleware(['role:Student'])->group(function () {
+    Route::get('/student/dashboard', function () {
+        return view('roles.student');
+    })->name('student.dashboard');
+});
+
+// Parent Only
+Route::middleware(['role:Parent'])->group(function () {
+    Route::get('/parent/dashboard', function () {
+        return view('roles.parent');
+    })->name('parent.dashboard');
+});
+
+// Bursar Only
+Route::middleware(['role:Bursar'])->group(function () {
+    Route::get('/bursar/dashboard', function () {
+        return view('roles.bursar');
+    })->name('bursar.dashboard');
 });
