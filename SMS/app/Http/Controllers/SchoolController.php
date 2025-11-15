@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class SchoolController extends Controller
 {
+
+    public function __construct()
+{
+    // Only allow users with SuperAdmin role
+    $this->middleware(['auth', 'role:SuperAdmin']);
+}
+
     /**
      * Display all schools.
      */
