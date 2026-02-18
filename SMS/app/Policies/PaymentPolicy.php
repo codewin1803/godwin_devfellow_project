@@ -13,7 +13,8 @@ class PaymentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        // Bursar and SchoolAdmin can see all payments.
+        return $user->hasAnyRole(['Bursar', 'SchoolAdmin']);
     }
 
     /**
@@ -21,7 +22,12 @@ class PaymentPolicy
      */
     public function view(User $user, Payment $payment): bool
     {
-        return false;
+        if ($user->hasAnyRole(['Bursar', 'SchoolAdmin'])) {
+            return true;
+        }
+        // Parents should be able to see their own payments.
+        // This would require checking the relationship, e.g., $user->id === $payment->invoice->student->parent_id
+        return $user->hasRole('Parent');
     }
 
     /**
@@ -29,7 +35,7 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['Bursar', 'SchoolAdmin']);
     }
 
     /**
@@ -37,7 +43,7 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return false;
+        return $user->hasAnyRole(['Bursar', 'SchoolAdmin']);
     }
 
     /**
@@ -45,7 +51,7 @@ class PaymentPolicy
      */
     public function delete(User $user, Payment $payment): bool
     {
-        return false;
+        return $user->hasAnyRole(['Bursar', 'SchoolAdmin']);
     }
 
     /**
@@ -53,7 +59,7 @@ class PaymentPolicy
      */
     public function restore(User $user, Payment $payment): bool
     {
-        return false;
+        return $user->hasAnyRole(['Bursar', 'SchoolAdmin']);
     }
 
     /**
@@ -61,6 +67,6 @@ class PaymentPolicy
      */
     public function forceDelete(User $user, Payment $payment): bool
     {
-        return false;
+        return $user->hasAnyRole(['Bursar', 'SchoolAdmin']);
     }
 }

@@ -13,7 +13,8 @@ class GradePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        // Teachers and Admins can see lists of grades.
+        return $user->hasAnyRole(['SchoolAdmin', 'Teacher']);
     }
 
     /**
@@ -21,7 +22,9 @@ class GradePolicy
      */
     public function view(User $user, Grade $grade): bool
     {
-        return false;
+        // Admins, Teachers, Students, and Parents should be able to view grades.
+        // More specific logic based on relationships would be ideal here.
+        return $user->hasAnyRole(['SchoolAdmin', 'Teacher', 'Student', 'Parent']);
     }
 
     /**
@@ -29,7 +32,7 @@ class GradePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('Teacher');
     }
 
     /**
@@ -37,7 +40,7 @@ class GradePolicy
      */
     public function update(User $user, Grade $grade): bool
     {
-        return false;
+        return $user->hasRole('Teacher');
     }
 
     /**
@@ -45,7 +48,7 @@ class GradePolicy
      */
     public function delete(User $user, Grade $grade): bool
     {
-        return false;
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
@@ -53,7 +56,7 @@ class GradePolicy
      */
     public function restore(User $user, Grade $grade): bool
     {
-        return false;
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
@@ -61,6 +64,6 @@ class GradePolicy
      */
     public function forceDelete(User $user, Grade $grade): bool
     {
-        return false;
+        return $user->hasRole('SchoolAdmin');
     }
 }

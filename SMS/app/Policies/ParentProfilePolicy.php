@@ -2,26 +2,26 @@
 
 namespace App\Policies;
 
-use App\Models\School;
+use App\Models\ParentProfile;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
-class SchoolPolicy
+class ParentProfilePolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, School $school): bool
+    public function view(User $user, ParentProfile $parentProfile): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
@@ -29,38 +29,38 @@ class SchoolPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, School $school): bool
+    public function update(User $user, ParentProfile $parentProfile): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, School $school): bool
+    public function delete(User $user, ParentProfile $parentProfile): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, School $school): bool
+    public function restore(User $user, ParentProfile $parentProfile): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, School $school): bool
+    public function forceDelete(User $user, ParentProfile $parentProfile): bool
     {
-        return $user->hasRole('SuperAdmin');
+        return $user->hasRole('SchoolAdmin');
     }
 }

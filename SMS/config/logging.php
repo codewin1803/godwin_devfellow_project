@@ -12,9 +12,8 @@ return [
     | Default Log Channel
     |--------------------------------------------------------------------------
     |
-    | This option defines the default log channel that is utilized to write
-    | messages to your logs. The value provided here should match one of
-    | the channels present in the list of "channels" configured below.
+    | For Day 25 (Backups & Maintenance), we rely on a STACK that
+    | uses DAILY log rotation to prevent disk overflow.
     |
     */
 
@@ -25,9 +24,7 @@ return [
     | Deprecations Log Channel
     |--------------------------------------------------------------------------
     |
-    | This option controls the log channel that should be used to log warnings
-    | regarding deprecated PHP and library features. This allows you to get
-    | your application ready for upcoming major versions of dependencies.
+    | Used to capture PHP and framework deprecation warnings.
     |
     */
 
@@ -41,23 +38,32 @@ return [
     | Log Channels
     |--------------------------------------------------------------------------
     |
-    | Here you may configure the log channels for your application. Laravel
-    | utilizes the Monolog PHP logging library, which includes a variety
-    | of powerful log handlers and formatters that you're free to use.
-    |
-    | Available drivers: "single", "daily", "slack", "syslog",
-    |                    "errorlog", "monolog", "custom", "stack"
+    | Available Drivers:
+    | single, daily, slack, syslog, errorlog, monolog, stack
     |
     */
 
     'channels' => [
 
+        /*
+        |--------------------------------------------------------------------------
+        | Stack Channel (Primary — Day 25)
+        |--------------------------------------------------------------------------
+        |
+        | Uses DAILY logs for rotation and maintenance safety.
+        |
+        */
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => explode(',', (string) env('LOG_STACK', 'daily')),
             'ignore_exceptions' => false,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Single Log Channel (Fallback)
+        |--------------------------------------------------------------------------
+        */
         'single' => [
             'driver' => 'single',
             'path' => storage_path('logs/laravel.log'),
@@ -65,6 +71,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Daily Log Rotation (REQUIRED FOR DAY 25)
+        |--------------------------------------------------------------------------
+        |
+        | Prevents unbounded log growth.
+        |
+        */
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
@@ -73,6 +87,11 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Slack Channel (Optional — Production Alerts)
+        |--------------------------------------------------------------------------
+        */
         'slack' => [
             'driver' => 'slack',
             'url' => env('LOG_SLACK_WEBHOOK_URL'),
@@ -82,6 +101,11 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Papertrail
+        |--------------------------------------------------------------------------
+        */
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -94,6 +118,11 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | STDERR (Docker / CI)
+        |--------------------------------------------------------------------------
+        */
         'stderr' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -105,6 +134,11 @@ return [
             'processors' => [PsrLogMessageProcessor::class],
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Syslog
+        |--------------------------------------------------------------------------
+        */
         'syslog' => [
             'driver' => 'syslog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -112,17 +146,38 @@ return [
             'replace_placeholders' => true,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Errorlog
+        |--------------------------------------------------------------------------
+        */
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Null Log Channel
+        |--------------------------------------------------------------------------
+        |
+        | Used when logging must be silenced.
+        |
+        */
         'null' => [
             'driver' => 'monolog',
             'handler' => NullHandler::class,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Emergency Log Channel
+        |--------------------------------------------------------------------------
+        |
+        | Used when all other logging channels fail.
+        |
+        */
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
